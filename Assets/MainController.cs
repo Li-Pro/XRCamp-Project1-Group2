@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class MainController : MonoBehaviour
 {
+    // main model
     private static MainModel mainModel;
 
-    // TODO: set the dialogue object in Start() (那ㄍ對話框)
+    // sub controllers
+    // ...
+
+    // TODO: set the dialogue object & player object in Start()
     public GameObject dialogueObj;
+    public GameObject playerObj;
 
     /// <summary>
-    /// Initialize the scene (if needed)
+    /// Initializes the scene (if needed)
     /// </summary>
     /// <param name="id">Id of scene to load</param>
     /// <returns>The parent GameObject of the scene</returns>
@@ -20,24 +25,13 @@ public class MainController : MonoBehaviour
         {
             case 0:
                 {
-                    
+                    // TODO: return the parent object of the scene
                     return null;
                 }
 
         }
 
         return null;
-    }
-
-    public void SwitchScene(int id, int from)
-    {
-        GameObject obj = LoadScene(from);
-
-        // find the GameObject location-from-<from>
-        string locationNode = string.Format("location-from-{0}", from);
-        Vector3 location = obj.transform.Find(locationNode).position;
-
-        // TODO: set player location
     }
 
     /// <summary>
@@ -61,36 +55,65 @@ public class MainController : MonoBehaviour
 
     //////////////////////////////////////////////////////////////////
 
-    void StartStory()
+    void StartPrologue()
     {
 
+    }
+
+    /// <summary>
+    /// Load a node of the story line
+    /// </summary>
+    /// <param name="id">the story node to load</param>
+    void LoadStoryNode(int id)
+    {
+        switch (id)
+        {
+            case 0:
+                {
+                    // TODO: setup interactive objects (mom & phone)
+                    // TODO: setup
+                    break;
+                }
+        }
     }
 
     void StartGameplay()
     {
         // LoadScene(0);
-        SwitchScene(0, 0);
-
-        // TODO: setup interactive objects
-
-        // TODO: setup 
+        mainModel.SwitchScene(0, 0);
+        LoadStoryNode(0);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        //StartStory();
-        StartGameplay();
-
         mainModel = GameObject.Find("MainModel").GetComponent<MainModel>();
 
-        // TODO: set the dialogue object (那ㄍ對話框)
-        dialogueObj = null;
+        // allow cross-scene reference
+        UnityEditor.SceneManagement.EditorSceneManager.preventCrossSceneReferences = false;
+
+        // TODO: setup the object refs with Find or FindWithTag
+        //dialogueObj = GameObject.Find("<name of dialogue>");
+        //playerObj = GameObject.Find("<name of player>");
+
+        // checks on connected objects
+        Debug.Assert(dialogueObj != null, "Dialogue Obj should be initialized.");
+        Debug.Assert(playerObj != null, "Player Obj should be initialized.");
+
+
+        //StartPrologue();
+        StartGameplay();
     }
 
     // Update is called once per frame
     void Update()
     {
 
+    }
+
+    void OnDestroy()
+    {
+        // reset cross-scene reference settings to prevent edits in editor (it would not be saved)
+        UnityEditor.SceneManagement.EditorSceneManager.preventCrossSceneReferences = true;
     }
 }
