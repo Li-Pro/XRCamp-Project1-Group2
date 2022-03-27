@@ -13,6 +13,12 @@ public class MainController : MonoBehaviour
     // TODO: set the dialogue object & player object in Start()
     public GameObject dialogueObj;
     public GameObject playerObj;
+    public GameObject playerLeftHandObj;
+    public GameObject playerRightHandObj;
+    public GameObject motherObj;
+
+    // TODO: set this
+    public int currentStoryNode;
 
     /// <summary>
     /// Initializes the scene (if needed)
@@ -26,7 +32,8 @@ public class MainController : MonoBehaviour
             case 0:
                 {
                     // TODO: return the parent object of the scene
-                    return null;
+                    motherObj = GameObject.FindWithTag("mother");
+                    return GameObject.Find("scene0-controller");
                 }
 
         }
@@ -43,7 +50,14 @@ public class MainController : MonoBehaviour
         // TODO: open dialogues mainModel.CreateDialog
         switch (id)
         {
+            case "story.start.0":
+                mainModel.CreateDialogue("Long time ago,", () => TriggerDialogue("story.start.1"));
+                break;
+            case "story.start.1":
+                mainModel.CreateDialogue("this is the second line.", () => StartGameplay());
+                break;
             case "mom.talk":
+                mainModel.CreateDialogue("媽媽 : please feed dog:)", () => LoadStoryNode(1));
                 break;
             case "phone.talk":
                 break;
@@ -53,11 +67,24 @@ public class MainController : MonoBehaviour
         // open series of dialogue: `mainModel.CreateDialogue("The first message", () => TriggerDialogue("The second message"))`
     }
 
+    public void onMotherTriggered(Collider other) {
+        bool check = GameObject.Find("phone").GetComponent<message>().message_check;
+        // Debug.Log("hi " + this + " " + other);
+        motherObj.GetComponent<mother_control>().mother_controller(other,check);
+
+    }
+
+    public void onPhoneTriggered(Collider other) {
+        // set message.message_check to true
+    }
+
     //////////////////////////////////////////////////////////////////
 
     void StartPrologue()
     {
+        TriggerDialogue("story.start.0");
 
+        // StartGameplay();
     }
 
     /// <summary>
@@ -72,6 +99,12 @@ public class MainController : MonoBehaviour
                 {
                     // TODO: setup interactive objects (mom & phone)
                     // TODO: setup
+                    mainModel.SwitchScene(0, 0);
+                    break;
+                }
+            case 1:
+                {
+                    
                     break;
                 }
         }
@@ -80,7 +113,8 @@ public class MainController : MonoBehaviour
     void StartGameplay()
     {
         // LoadScene(0);
-        mainModel.SwitchScene(0, 0);
+        
+        dialogueObj.SetActive(false);
         LoadStoryNode(0);
     }
 
@@ -93,16 +127,18 @@ public class MainController : MonoBehaviour
         UnityEditor.SceneManagement.EditorSceneManager.preventCrossSceneReferences = false;
 
         // TODO: setup the object refs with Find or FindWithTag
-        //dialogueObj = GameObject.Find("<name of dialogue>");
-        //playerObj = GameObject.Find("<name of player>");
+        dialogueObj = GameObject.Find("textbubble");
+        playerObj = GameObject.FindWithTag("Player");
+        playerLeftHandObj = GameObject.FindWithTag("hands_l_gloves_mat06");
+        playerRightHandObj = GameObject.FindWithTag("hands_r_gloves_mat06");
 
         // checks on connected objects
         Debug.Assert(dialogueObj != null, "Dialogue Obj should be initialized.");
         Debug.Assert(playerObj != null, "Player Obj should be initialized.");
 
 
-        //StartPrologue();
-        StartGameplay();
+        StartPrologue();
+        // StartGameplay();
     }
 
     // Update is called once per frame

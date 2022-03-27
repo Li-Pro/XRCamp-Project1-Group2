@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - mother
+  - hands_l_gloves_mat06
+  - hands_r_gloves_mat06
   layers:
   - Default
   - TransparentFX
