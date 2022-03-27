@@ -5,10 +5,11 @@ using UnityEngine;
 public class playercontrol_mother : MonoBehaviour
 {
     public GameObject mom;
-    public GameObject teddy;
+    //public GameObject teddy;
+    public Material mat;
     private bool check;
-    public float dist=10;
-    RaycastHit hit;
+    //public float dist=10;
+    //RaycastHit hit;
     public GameObject UiObject;
     void Start()
     {
@@ -43,13 +44,17 @@ public class playercontrol_mother : MonoBehaviour
     */
     void OnTriggerEnter(Collider other){
         check = GameObject.Find("phone").GetComponent<message>().message_check;
+        if (other.tag == "mother")
+        {
             if (check)
             {
-                Debug.Log("to teddy");
+                Debug.Log("to teddy" + other);
                 //check the message
-                //mom turn to teddy
-                Instantiate(teddy, mom.transform.position, mom.transform.rotation);//生成一個teddy的複製品在指定的位置上
-                Destroy(mom);
+                //mom change the material
+
+                //Instantiate(teddy, mom.transform.position, mom.transform.rotation);//生成一個teddy的複製品在指定的位置上
+                //Destroy(mom);
+                mom.GetComponent<Renderer>().material = mat;
             }
             else
             {
@@ -58,6 +63,7 @@ public class playercontrol_mother : MonoBehaviour
                 //text bubble
                 UiObject.SetActive(true);
             }
+        }
     }
     void OnTriggerExit(Collider other){
         if(other.tag=="mother"){
