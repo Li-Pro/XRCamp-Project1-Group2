@@ -7,6 +7,9 @@ TagManager:
   - mother
   - hands_l_gloves_mat06
   - hands_r_gloves_mat06
+  - food
+  - dog
+  - father
   layers:
   - Default
   - TransparentFX
