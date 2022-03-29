@@ -20,7 +20,13 @@ public class feeddog : MonoBehaviour
     {
         if (other.tag == "dog_food_pouch" && !food.activeSelf)
         {
-            food.transform.Find("PouringSound").GetComponent<AudioSource>().Play();
+            // food.transform.Find("PouringSound").GetComponent<AudioSource>().Play();
+            GameObject pourSoundObj = GameObject.Find("PouringSound");
+            if (pourSoundObj != null)
+            {
+                pourSoundObj.GetComponent<AudioSource>().Play();
+            }
+
             food.SetActive(true);
         }
     }
