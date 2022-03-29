@@ -59,12 +59,13 @@ public class MainModel : MonoBehaviour
         //     callback();
         // }, 2.0f);
 
-        mainController.SetPlayerLock(false);
+        mainController.SetPlayerMovable(false);
 
         //_startCoroutine(callback, 2.0f);
         //StartCoroutine(callbackInSecond(callback, 2.0f));
         StartCoroutine(callBackAfterIndexClick(() => {
-            mainController.SetPlayerLock(true);
+            mainController.SetPlayerMovable(true);
+            mainController.dialogueObj.SetActive(false);
             callback();
         }));
     }

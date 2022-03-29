@@ -52,17 +52,17 @@ public class phone_control : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("colliding with: " + other);
-        if (other.name.StartsWith("hand"))
-        {
-            Debug.Log("colliding with2: " + other);
-            //fadeScreen();
+    // private void OnTriggerEnter(Collider other)
+    // {
+    //     Debug.Log("colliding with: " + other);
+    //     if (other.name.StartsWith("hand"))
+    //     {
+    //         Debug.Log("colliding with2: " + other);
+    //         //fadeScreen();
 
-            MainController.theController.onPhoneTriggered(this.GetComponent<Collider>());
-        }
-    }
+    //         MainController.theController.onPhoneTriggered(this.GetComponent<Collider>());
+    //     }
+    // }
 
     // Start is called before the first frame update
     void Start()

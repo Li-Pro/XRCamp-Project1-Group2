@@ -81,7 +81,7 @@ public class MainController : MonoBehaviour
                 mainModel.CreateDialogue("媽媽 : xxx，別一直看電視，記得要去餵大白:)", () => LoadStoryNode(2));
                 break;
             case "phone.talk":
-                mainModel.CreateDialogue("2022 春徵線上說明會好康報報！參加線上說明會每人每場次可獲一點，7點可兌換7-11百元商品卡，14點可兌換7-11千元商品卡！", () => LoadStoryNode(2));
+                mainModel.CreateDialogue("2022春徵線上說明會好康報報！參加線上說明會每人每場次可獲一點，7點可兌換7-11百元商品卡，14點可兌換7-11千元商品卡！", () => SetDialogueActiveFalse(2));
                 break;
             case "phone.battery.low":
                 mainModel.CreateDialogue("手機沒電了...", () => LoadStoryNode(2));
@@ -184,7 +184,7 @@ public class MainController : MonoBehaviour
         LoadStoryNode(storynode);
     }
 
-    public void SetPlayerLock(bool enabled)
+    public void SetPlayerMovable(bool enabled)
     {
         //mainController.playerObj.SetActive(enabled);
 
@@ -213,6 +213,7 @@ public class MainController : MonoBehaviour
     /// <param name="id">the story node to load</param>
     void LoadStoryNode(int id)
     {
+        Debug.Log("Loading story node " + id);
         switch (id)
         {
             case 0:
@@ -280,6 +281,7 @@ public class MainController : MonoBehaviour
         dogObj = GameObject.FindWithTag("dog");
         motherObj = GameObject.FindWithTag("mother");
         blackObj = GameObject.Find("blackarea");
+        phoneObj = GameObject.Find("phone");
 
         defaultPlayerAction = playerObj.GetComponent<BNG.VREmulator>().EmulatorActionSet;
 
@@ -287,7 +289,7 @@ public class MainController : MonoBehaviour
         Debug.Assert(dialogueObj != null, "Dialogue Obj should be initialized.");
         Debug.Assert(playerObj != null, "Player Obj should be initialized.");
 
-        playerObj.transform.Find("PlayerController").GetComponent<BNG.PlayerTeleport>().HandSide = BNG.ControllerHand.None;
+        // playerObj.transform.Find("PlayerController").GetComponent<BNG.PlayerTeleport>().HandSide = BNG.ControllerHand.None;
 
         //Debug.Log("someTHING");
         //StartCoroutine(Lates)
@@ -298,7 +300,7 @@ public class MainController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        playerObj.transform.Find("PlayerController").GetComponent<BNG.PlayerTeleport>().enabled = false;
     }
 
     void OnDestroy()
