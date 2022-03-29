@@ -16,11 +16,13 @@ public class phone_control : MonoBehaviour
         if (!isMomTriggered)
         {
             MainController.theController.TriggerDialogue("phone.talk");
+            this.transform.Find("VibrateSound").GetComponent<AudioSource>().Play();
         }
         else
         {
             fadeScreen();
             MainController.theController.TriggerDialogue("phone.battery.low");
+            this.transform.Find("VibrateSound").GetComponent<AudioSource>().Play();
         }
 
         //public static MainController theController { get; private set; } = null;

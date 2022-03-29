@@ -1,6 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public interface ISayable
+{
+    void playSaySound();
+}
 
 public class MainModel : MonoBehaviour
 {
@@ -13,19 +19,34 @@ public class MainModel : MonoBehaviour
 
     private UnityEngine.InputSystem.InputActionAsset defaultPlayerAction = null;
 
+    public void SetEmptyScene()
+    {
+        GameObject locationObj = GameObject.Find("location-empty");
+        Vector3 location = locationObj.transform.position;
+        Quaternion rotation = locationObj.transform.rotation;
+
+        mainController.playerObj.transform.Find("PlayerController").position = location;
+        mainController.playerObj.transform.Find("PlayerController").rotation = rotation;
+    }
     public void SwitchScene(int id, int from)
     {
-        GameObject obj = mainController.LoadScene(from);
+        GameObject obj = mainController.LoadScene(id);
 
         // find the GameObject location-from-<from>
         string locationNode = string.Format("location-from-{0}", from);
 
-        Debug.Log("switch: " + obj);
-        Debug.Log("switch: " + obj + " " + obj.transform.Find(locationNode));
+        // Debug.Log("switch: " + obj);
+        // Debug.Log("switch: " + obj + " " + obj.transform.Find(locationNode));
         Vector3 location = obj.transform.Find(locationNode).position;
+        Quaternion rotation = obj.transform.Find(locationNode).rotation;
 
         // TODO: set rotation
-        mainController.playerObj.transform.position = location;
+        Debug.Log("Switching player to: location=" + location + ", rotation=" + rotation);
+        mainController.playerObj.transform.Find("PlayerController").position = location;
+        mainController.playerObj.transform.Find("PlayerController").rotation = rotation;
+
+        mainController.GetSceneBGM(from).Stop();
+        mainController.GetSceneBGM(id).Play();
     }
 
     //private Callback _theCallback;
@@ -40,18 +61,54 @@ public class MainModel : MonoBehaviour
     //    mainController.playerObj.GetComponent<BNG.VREmulator>().EmulatorActionSet = (enabled ? defaultPlayerAction : null);
     //}
     
-    public void CreateDialogue(string message, Callback callback)
+    public string splitLineWithWidth(string messageRaw, int width)
     {
+        string res = "";
+        foreach (string message in messageRaw.Split('\n'))
+        {
+            for (int i = 0; i < message.Length; i += width)
+            {
+                int remLen = Math.Min(width, message.Length - i);
+                res += message.Substring(i, remLen) + '\n';
+            }
+        }
+
+        return res;
+    }
+
+    public void CreateDialogue(string message_, Callback callback)
+    {
+        CreateDialogue(message_, callback, null, false);
+    }
+
+    public void CreateDialogue(string message_, Callback callback, ISayable target)
+    {
+        CreateDialogue(message_, callback, target, false);
+    }
+
+    public void CreateDialogueOverlay(string message_, Callback callback)
+    {
+        CreateDialogue(message_, callback, null, true);
+    }
+
+    public void CreateDialogue(string message_, Callback callback, ISayable target, bool isOverlay)
+    {
+        string message = splitLineWithWidth(message_, 15);
+        int lineCnt = message.Split('\n').Length;
+
         // TODO: set text to the retrieved message & mainController.SetDialogueText
         UnityEngine.UI.Text text = mainController.dialogueObj.transform.Find("Text").GetComponent<UnityEngine.UI.Text>();
         text.text = message;
 
+        RectTransform rectTransform = mainController.dialogueObj.transform.Find("Panel").GetComponent<RectTransform>();
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta[0], /*lineCnt * 60*/ lineCnt*50 + 50);
+
         // TODO: show it? (how? and how long? / how do we close it?)
         mainController.dialogueObj.SetActive(true);
-        Debug.Log(mainController.dialogueObj);
-        Debug.Assert(mainController.dialogueObj.activeSelf);
+        // Debug.Log(mainController.dialogueObj);
+        // Debug.Assert(mainController.dialogueObj.activeSelf);
         
-        Debug.Log("created dialog");
+        Debug.Log("created dialog: " + message);
 
         // TODO: callback after dialogue is finished (e.g. connect to some source / some onclicked())
         // callbackInSecond(() => {
@@ -59,13 +116,22 @@ public class MainModel : MonoBehaviour
         //     callback();
         // }, 2.0f);
 
-        mainController.SetPlayerMovable(false);
+        mainController.SetPlayerMovable(isOverlay);
+
+        if (target != null)
+        {
+            target.playSaySound();
+        }
 
         //_startCoroutine(callback, 2.0f);
         //StartCoroutine(callbackInSecond(callback, 2.0f));
         StartCoroutine(callBackAfterIndexClick(() => {
             mainController.SetPlayerMovable(true);
             mainController.dialogueObj.SetActive(false);
+
+            // mainController.dialogueObj.GetComponent<AudioSource>().Play();
+            GameObject.Find("UISound").GetComponent<AudioSource>().Play();
+
             callback();
         }));
     }
@@ -89,14 +155,19 @@ public class MainModel : MonoBehaviour
                 || /* for debug */ Input.GetButtonDown("Jump");
         });
 
-        Debug.Log("Hello?");
+        // Debug.Log("Hello?");
 
         yield return new WaitForFixedUpdate();
         callback();
     }
 
+    public void CallbackInSecond(Callback callback, float waitTime)
+    {
+        StartCoroutine(callbackInSecond(callback, waitTime));
+    }
+
     private IEnumerator callbackInSecond(Callback callback, float waitTime) {
-        Debug.Log("is calling callback");
+        // Debug.Log("is calling callback");
         // yield return new WaitForSeconds(seconds);
         // callback();
 

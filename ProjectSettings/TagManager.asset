@@ -11,6 +11,7 @@ TagManager:
   - dog
   - father
   - phone
+  - dog_food_pouch
   layers:
   - Default
   - TransparentFX
